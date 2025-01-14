@@ -47,12 +47,13 @@ def post_data():
 
     data = request.get_json(silent=True)  # Возвращает None, если JSON некорректен
     if data is None:
-        return jsonify({"error": "Invalid JSON"}), 400
+        return jsonify({"error": "Invalid JSON!!!"}), 400
 
     PayoutId = data.get("PayoutId", "unknown")
     MerchantReference = data.get("MerchantReference", "unknown")
     NotifyUrl = data.get("NotifyUrl", "unknown")
     IsVerified = True
+
     Reason=""
     if (PayoutId=="unknown" or MerchantReference=="unknown"):
         IsVerified=False
