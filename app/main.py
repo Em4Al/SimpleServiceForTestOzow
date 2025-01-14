@@ -10,10 +10,13 @@
 # source venv/bin/activate
 # pip install requests
 # pip install --upgrade pip
-
+#
+import requests
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
+#Отключите CSRF для тестирования (если это безопасно):
+app.config['WTF_CSRF_ENABLED'] = False
 
 # Пример токена для авторизации (в реальном проекте он должен быть безопасно сгенерирован)
 VALID_TOKEN = "your_secure_token_123"
@@ -38,8 +41,9 @@ def post_data():
     # Проверяем
     result =check_header(auth_header)
     # Если токен не валиден, вернем ошибку
-    if result[1]!=200:
-        return result
+
+    #if result[1]!=200:
+    #    return result
 
     data = request.get_json(silent=True)  # Возвращает None, если JSON некорректен
     if data is None:
@@ -47,6 +51,7 @@ def post_data():
 
     PayoutId = data.get("PayoutId", "unknown")
     MerchantReference = data.get("MerchantReference", "unknown")
+    NotifyUrl = data.get("NotifyUrl", "unknown")
     IsVerified = True
     Reason=""
     if (PayoutId=="unknown" or MerchantReference=="unknown"):
@@ -59,7 +64,16 @@ def post_data():
           "AccountNumberDecryptionKey": MerchantReference,
           "Reason": Reason
         }
+    #---
 
+    headers = {
+        "accept": "application/json",
+        "Content-Type": "application/json"
+    }
+    #print("NotifyUrl:"+NotifyUrl)
+    response = requests.post(url=NotifyUrl,json=return_data,headers=headers)
+
+    #---
     return jsonify(return_data)
 
 
